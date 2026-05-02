@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laptop Battle — Full Comparison 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --bg2:#111111;
+  --bg3:#1a1a1a;
+  --card:#141414;
+  --border:#252525;
+  --accent:#ff4d00;
+  --accent2:#ff8c00;
+  --blue:#3b9fff;
+  --green:#00cc6a;
+  --red:#ff3b3b;
+  --amber:#ffb800;
+  --purple:#a855f7;
+  --text:#f0f0f0;
+  --muted:#888;
+  --dim:#555;
+  --font:'DM Sans',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Bebas Neue',cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden}
+::selection{background:var(--accent);color:#fff}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--accent)}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:.5px;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,77,0,0.12) 0%, transparent 70%);pointer-events:none}
+.hero-tag{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;padding:4px 12px;border:1px solid rgba(255,77,0,0.4);display:inline-block;border-radius:2px}
+.hero h1{font-family:var(--display);font-size:clamp(3rem,10vw,7rem);line-height:.9;letter-spacing:3px;color:var(--text);margin-bottom:1.5rem}
+.hero h1 span{color:var(--accent)}
+.hero-sub{font-size:15px;color:var(--muted);max-width:500px;line-height:1.7;margin-bottom:3rem}
+.hero-stats{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap}
+.hero-stat .num{font-family:var(--display);font-size:2.5rem;color:var(--accent)}
+.hero-stat .label{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+
+/* SECTIONS */
+section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
+.section-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:.75rem}
+.section-title{font-family:var(--display);font-size:clamp(1.8rem,4vw,3rem);letter-spacing:2px;margin-bottom:.5rem}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:2.5rem;line-height:1.6}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.5rem}
+.laptop-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative}
+.laptop-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 40px rgba(255,77,0,0.12)}
+.laptop-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,77,0,0.3)}
+.card-img{width:100%;height:180px;object-fit:contain;background:#0e0e0e;padding:16px;display:block}
+.card-img-fallback{width:100%;height:180px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:36px}
+.card-body{padding:1rem}
+.card-name{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.3}
+.card-type{font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:.75rem;font-family:var(--mono)}
+.card-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.score-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-right:12px}
+.score-bar{height:100%;border-radius:3px;transition:width 1s ease}
+.score-num{font-family:var(--mono);font-size:16px;font-weight:600}
+.card-specs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.75rem}
+.spec-pill{background:var(--bg3);border-radius:4px;padding:5px 8px}
+.spec-pill .key{font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.spec-pill .val{font-size:11px;font-weight:500;margin-top:2px;color:var(--text)}
+.card-price{font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600}
+.card-launch{font-size:10px;color:var(--muted);margin-top:2px}
+.card-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:.75rem}
+.badge{padding:3px 8px;border-radius:3px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.badge-green{background:rgba(0,204,106,0.15);color:var(--green);border:1px solid rgba(0,204,106,0.3)}
+.badge-red{background:rgba(255,59,59,0.15);color:var(--red);border:1px solid rgba(255,59,59,0.3)}
+.badge-amber{background:rgba(255,184,0,0.15);color:var(--amber);border:1px solid rgba(255,184,0,0.3)}
+.badge-blue{background:rgba(59,159,255,0.15);color:var(--blue);border:1px solid rgba(59,159,255,0.3)}
+.badge-purple{background:rgba(168,85,247,0.15);color:var(--purple);border:1px solid rgba(168,85,247,0.3)}
+.amz-btn{display:flex;align-items:center;gap:6px;margin-top:.75rem;background:rgba(255,140,0,0.12);border:1px solid rgba(255,140,0,0.3);color:var(--accent2);padding:7px 12px;border-radius:6px;font-size:11px;font-weight:600;text-decoration:none;transition:background .2s;letter-spacing:.5px}
+.amz-btn:hover{background:rgba(255,140,0,0.22)}
+.amz-icon{font-size:14px}
+.winner-ribbon{position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;text-transform:uppercase}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.filter-btn.active,.filter-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* CHARTS SECTION */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:1.5rem;margin-top:2rem}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:1rem;color:var(--muted);letter-spacing:.5px}
+.chart-wrap{position:relative;height:280px}
+
+/* RADAR SECTION */
+.radar-section{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+@media(max-width:900px){.radar-section{grid-template-columns:1fr}}
+.radar-text p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:1rem}
+
+/* DETAIL TABLE */
+.detail-section{overflow-x:auto;margin-top:2rem;border:1px solid var(--border);border-radius:12px}
+.detail-table{width:100%;border-collapse:collapse;min-width:1100px;font-size:12px}
+.detail-table th{background:var(--bg3);padding:10px 12px;text-align:left;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;font-family:var(--mono)}
+.detail-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;color:var(--text);white-space:nowrap}
+.detail-table tr:hover td{background:rgba(255,255,255,0.03)}
+.detail-table tr:last-child td{border-bottom:none}
+.tbl-name{font-weight:600;font-size:12px}
+.tbl-score{font-family:var(--mono);font-weight:700;font-size:14px}
+
+/* HEATMAP */
+.heatmap-grid{display:grid;gap:2px;margin-top:1rem}
+.hm-row{display:flex;gap:2px;align-items:center}
+.hm-label{font-size:10px;color:var(--muted);width:130px;flex-shrink:0;font-family:var(--mono)}
+.hm-cell{height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,0.9);cursor:pointer;transition:transform .15s;flex:1;position:relative}
+.hm-cell:hover{transform:scale(1.05);z-index:10}
+.hm-header{display:flex;gap:2px;margin-left:132px;margin-bottom:4px}
+.hm-header span{flex:1;font-size:9px;color:var(--muted);text-align:center;font-family:var(--mono);writing-mode:vertical-rl;transform:rotate(180deg);height:60px;display:flex;align-items:center;justify-content:center}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+
+/* FOOTER */
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);color:var(--dim);font-size:12px;font-family:var(--mono)}
+footer span{color:var(--accent)}
+
+/* LEGEND */
+.legend-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1.5rem}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">LAPTOP BATTLE</div>
+  <div class="nav-links">
+    <a href="#cards">All Models</a>
+    <a href="#charts">Charts</a>
+    <a href="#heatmap">Heatmap</a>
+    <a href="#table">Full Specs</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// 2024 Laptop Intelligence Report</div>
+  <h1>14 LAPTOPS.<br><span>ZERO</span> MERCY.</h1>
+  <p class="hero-sub">Every spec, every thermal, every rupee. Built for one purpose: helping you pick without regrets.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">14</div><div class="label">Models Compared</div></div>
+    <div class="hero-stat"><div class="num">30+</div><div class="label">Parameters</div></div>
+    <div class="hero-stat"><div class="num">₹35K</div><div class="label">Budget Range Start</div></div>
+    <div class="hero-stat"><div class="num">₹1.3L+</div><div class="label">Premium End</div></div>
+  </div>
+</div>
+
+<!-- CARDS SECTION -->
+<section id="cards" class="reveal">
+  <div class="section-tag">// 01 — All Models</div>
+  <div class="section-title">THE LINEUP</div>
+  <p class="section-sub">Click any card to highlight. Filter by category below.</p>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCards('all',this)">All (14)</button>
+    <button class="filter-btn" onclick="filterCards('gaming',this)">Gaming</button>
+    <button class="filter-btn" onclick="filterCards('budget-gaming',this)">Budget Gaming</button>
+    <button class="filter-btn" onclick="filterCards('premium',this)">Premium/Mac</button>
+    <button class="filter-btn" onclick="filterCards('office',this)">Budget/Office</button>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<!-- CHARTS SECTION -->
+<section id="charts" class="reveal">
+  <div class="section-tag">// 02 — Visualizations</div>
+  <div class="section-title">DATA DECODED</div>
+  <p class="section-sub">All 14 laptops across key performance dimensions.</p>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">OVERALL SCORE — All 14 Laptops</div>
+      <div class="chart-wrap"><canvas id="scoreChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">PRICE vs PERFORMANCE</div>
+      <div class="chart-wrap"><canvas id="pvpChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">GPU TGP (Watts) — Power Delivered</div>
+      <div class="chart-wrap"><canvas id="tgpChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">THERMAL PERFORMANCE (Max Temp °C — Lower is Better)</div>
+      <div class="chart-wrap"><canvas id="thermalChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">BATTERY — Light Use (Hours)</div>
+      <div class="chart-wrap"><canvas id="batteryChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">BLENDER RENDER TIME (Min — Lower is Better)</div>
+      <div class="chart-wrap"><canvas id="blenderChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Radar -->
+  <div style="margin-top:2rem" class="chart-card">
+    <div class="chart-title">RADAR — Top 6 Gaming Laptops Multi-Parameter</div>
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <div style="position:relative;height:360px;flex:1;min-width:300px"><canvas id="radarChart"></canvas></div>
+      <div class="radar-section" style="grid-template-columns:1fr;flex:1;min-width:250px">
+        <div class="radar-text">
+          <p>The radar shows 6 dimensions: <strong style="color:var(--accent)">Performance</strong>, <strong style="color:var(--blue)">Thermals</strong>, <strong style="color:var(--green)">Upgradeability</strong>, <strong style="color:var(--amber)">Battery</strong>, <strong style="color:var(--purple)">Value</strong>, and <strong style="color:#ff6b6b">Build Quality</strong>.</p>
+          <p>Legion 5 leads the most categories. HP Omen edges it in thermal management. TUF F16 punches above its price on upgradeability.</p>
+          <p>MacBook Pro M4 scores exceptionally on battery and build but is hobbled by zero upgradeability.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEATMAP -->
+<section id="heatmap" class="reveal">
+  <div class="section-tag">// 03 — Heatmap</div>
+  <div class="section-title">PARAMETER HEATMAP</div>
+  <p class="section-sub">Red = bad / low. Green = good / high. Every laptop × every key parameter at a glance.</p>
+  <div id="heatmapContainer"></div>
+</section>
+
+<!-- FULL TABLE -->
+<section id="table" class="reveal">
+  <div class="section-tag">// 04 — Full Specs</div>
+  <div class="section-title">EVERY SPEC, EVERY LAPTOP</div>
+  <p class="section-sub">Scroll right for all columns.</p>
+  <div class="detail-section">
+    <table class="detail-table" id="fullTable"></table>
+  </div>
+</section>
+
+<footer>
+  Built with <span>♥</span> for Bu — All data from verified reviews & manufacturer specs. Amazon links are referral-free. Prices in INR as of 2024.
+</footer>
+
+<script>
+// ===================== DATA =====================
+const laptops = [
+  {
+    id:0, name:"Lenovo Legion 5", short:"Legion 5", type:"gaming", typeLabel:"Gaming",
+    score:92, priceRange:"₹1,09,990–₹1,49,990", launchPrice:"₹1,09,990", launchYear:2024,
+    cpu:"Intel i7-14650HX / Ryzen 7", cpuHz:"up to 5.2 GHz", cpuGen:"14th Gen",
+    gpu:"RTX 4060 8GB", gpuTGP:140, gpuAtSpec:true,
+    ram:"16–32GB DDR5", ramHz:"DDR5-5600", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"Samsung PM9C1",
+    display:'16" WQXGA 2560×1600', panel:"IPS QHD", hz:165,
+    weight:2.3, body:"All-metal chassis", fans:2,
+    thermalSys:"Legion Coldfront, thermal shelf, 2× fans",
+    throttle:"None", cpuTemp:85, gpuTemp:75, powerDraw:230,
+    batteryLight:5.5, batteryHeavy:1.5,
+    os:"Windows 11", blender:11, benchmark:9200,
+    afterSale:"Good", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/430xxAn",
+    emoji:"🏆", winner:true, winnerLabel:"BEST OVERALL",
+    color:"#00cc6a",
+    badges:[{t:"No Throttling",c:"green"},{t:"MUX Switch",c:"blue"},{t:"Metal Build",c:"blue"},{t:"2 SSD Slots",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71INtcx4NRL._SL1500_.jpg"
+  },
+  {
+    id:1, name:"Asus TUF F16", short:"TUF F16", type:"gaming", typeLabel:"Gaming",
+    score:87, priceRange:"₹89,990–₹1,09,990", launchPrice:"₹89,990", launchYear:2024,
+    cpu:"Intel i7-13650HX", cpuHz:"up to 4.9 GHz", cpuGen:"13th Gen",
+    gpu:"RTX 4060 8GB", gpuTGP:130, gpuAtSpec:true,
+    ram:"16GB DDR5", ramHz:"DDR5-4800", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"WD SN560 (OEM)",
+    display:'16" WUXGA 1920×1200', panel:"IPS 165Hz", hz:165,
+    weight:2.27, body:"Metal lid + plastic base", fans:2,
+    thermalSys:"2× Arc Flow fans, 5 heat pipes, 4 vents, dust filters",
+    throttle:"Minimal", cpuTemp:97, gpuTemp:83, powerDraw:130,
+    batteryLight:4.5, batteryHeavy:1.2,
+    os:"Windows 11", blender:14, benchmark:8500,
+    afterSale:"Good", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/48apkNC",
+    emoji:"🔥", winner:false,
+    color:"#3b9fff",
+    badges:[{t:"Dust Filter",c:"green"},{t:"MUX Switch",c:"blue"},{t:"Arc Flow Fans",c:"blue"},{t:"Upgradable",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71H8OFLMhpL._SL1500_.jpg"
+  },
+  {
+    id:2, name:"MacBook Pro M4", short:"MBP M4", type:"premium", typeLabel:"Premium/Mac",
+    score:82, priceRange:"₹1,29,900+", launchPrice:"₹1,29,900", launchYear:2024,
+    cpu:"Apple M4 (10-core)", cpuHz:"up to 4.4 GHz", cpuGen:"Apple Silicon",
+    gpu:"M4 GPU 10-core", gpuTGP:35, gpuAtSpec:true,
+    ram:"16GB Unified", ramHz:"LPDDR5X ~7500", ramSlots:0, ramEmpty:false,
+    ssdGen:"PCIe Gen 4", ssdBrand:"Apple Proprietary",
+    display:'14" 2560×1664', panel:"Liquid Retina XDR", hz:120,
+    weight:1.55, body:"All-aluminum (premium)", fans:1,
+    thermalSys:"Passive + active hybrid, highly efficient",
+    throttle:"None", cpuTemp:60, gpuTemp:0, powerDraw:35,
+    batteryLight:18, batteryHeavy:5,
+    os:"macOS", blender:4, benchmark:0,
+    afterSale:"Excellent", upgrade:"Zero — fully soldered", updateSupport:"macOS 5yr+ updates",
+    amzLink:"https://amzn.to/3W126he",
+    emoji:"🍎", winner:false,
+    color:"#a855f7",
+    badges:[{t:"Best Battery",c:"green"},{t:"Soldered RAM",c:"red"},{t:"Best Display",c:"blue"},{t:"macOS Only",c:"amber"}],
+    img:"https://m.media-amazon.com/images/I/61lsexTCOoL._SL1500_.jpg"
+  },
+  {
+    id:3, name:"MacBook Air", short:"MacBook Air", type:"premium", typeLabel:"Premium/Mac",
+    score:74, priceRange:"₹1,14,900+", launchPrice:"₹1,14,900", launchYear:2024,
+    cpu:"Apple M3 (8-core)", cpuHz:"up to 4.05 GHz", cpuGen:"Apple Silicon",
+    gpu:"M3 GPU 10-core", gpuTGP:20, gpuAtSpec:false,
+    ram:"8–16GB Unified", ramHz:"LPDDR5 ~6400", ramSlots:0, ramEmpty:false,
+    ssdGen:"PCIe Gen 4", ssdBrand:"Apple Proprietary",
+    display:'13.6" 2560×1664', panel:"Liquid Retina IPS", hz:60,
+    weight:1.24, body:"All-aluminum", fans:0,
+    thermalSys:"Completely fanless — passive cooling only",
+    throttle:"Yes (sustained)", cpuTemp:90, gpuTemp:0, powerDraw:22,
+    batteryLight:18, batteryHeavy:3.5,
+    os:"macOS", blender:8, benchmark:0,
+    afterSale:"Excellent", upgrade:"Zero — fully soldered", updateSupport:"macOS 5yr+ updates",
+    amzLink:"https://amzn.to/4gTPQNx",
+    emoji:"💨", winner:false,
+    color:"#a855f7",
+    badges:[{t:"Fanless",c:"amber"},{t:"Throttles",c:"red"},{t:"Lightest",c:"blue"},{t:"18hr Battery",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71vFKBpKakL._SL1500_.jpg"
+  },
+  {
+    id:4, name:"Acer Nitro V16", short:"Nitro V16", type:"budget-gaming", typeLabel:"Budget Gaming",
+    score:80, priceRange:"₹79,990–₹99,990", launchPrice:"₹79,990", launchYear:2024,
+    cpu:"Intel i7-13620H", cpuHz:"up to 4.9 GHz", cpuGen:"13th Gen",
+    gpu:"RTX 4050 6GB", gpuTGP:95, gpuAtSpec:true,
+    ram:"16GB DDR5", ramHz:"DDR5-4800", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"SK Hynix / Micron",
+    display:'16" WUXGA 1920×1200', panel:"IPS", hz:165,
+    weight:2.4, body:"Plastic chassis", fans:2,
+    thermalSys:"Dual fan, 4 heat pipes, rear vents",
+    throttle:"Mild under stress", cpuTemp:90, gpuTemp:80, powerDraw:130,
+    batteryLight:4, batteryHeavy:1.5,
+    os:"Windows 11", blender:18, benchmark:7200,
+    afterSale:"Average", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/42kpuhG",
+    emoji:"⚔️", winner:false,
+    color:"#ffb800",
+    badges:[{t:"Best Value",c:"green"},{t:"PCIe Gen 4",c:"blue"},{t:"165Hz",c:"blue"},{t:"Upgradable",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71YJsZ9mcYL._SL1500_.jpg"
+  },
+  {
+    id:5, name:"Lenovo IdeaPad Slim 3", short:"IdeaPad Slim 3", type:"office", typeLabel:"Budget/Office",
+    score:45, priceRange:"₹49,990–₹63,990", launchPrice:"₹49,990", launchYear:2023,
+    cpu:"i5-12th / i7-13th Gen", cpuHz:"up to 4.7 GHz", cpuGen:"12–13th Gen",
+    gpu:"Intel Iris Xe (iGPU)", gpuTGP:15, gpuAtSpec:false,
+    ram:"8–16GB DDR4/5", ramHz:"DDR4-3200 / DDR5", ramSlots:1, ramEmpty:false,
+    ssdGen:"PCIe Gen 3/4", ssdBrand:"SK Hynix/Micron OEM",
+    display:'15.6" FHD 1920×1080', panel:"TN/IPS", hz:60,
+    weight:1.7, body:"Plastic (slim)", fans:1,
+    thermalSys:"Single fan, basic heatpipe",
+    throttle:"Yes under load", cpuTemp:80, gpuTemp:0, powerDraw:65,
+    batteryLight:7.5, batteryHeavy:3,
+    os:"Windows 11", blender:35, benchmark:12000,
+    afterSale:"Good", upgrade:"Very limited (1 slot)", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/4nYkuaD",
+    emoji:"📚", winner:false,
+    color:"#555",
+    badges:[{t:"Lightweight",c:"blue"},{t:"No dGPU",c:"red"},{t:"Office Use",c:"amber"}],
+    img:"https://m.media-amazon.com/images/I/71wN8LJCAYL._SL1500_.jpg"
+  },
+  {
+    id:6, name:"Asus Vivobook 15", short:"Vivobook 15", type:"office", typeLabel:"Budget/Office",
+    score:42, priceRange:"₹45,990–₹68,990", launchPrice:"₹45,990", launchYear:2024,
+    cpu:"i5/i7 12–13th Gen / Ryzen 5", cpuHz:"up to 4.7 GHz", cpuGen:"12–13th Gen",
+    gpu:"Intel Iris Xe / AMD Radeon", gpuTGP:15, gpuAtSpec:false,
+    ram:"8–16GB DDR4", ramHz:"DDR4-3200", ramSlots:1, ramEmpty:false,
+    ssdGen:"PCIe Gen 3", ssdBrand:"SK Hynix OEM",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:60,
+    weight:1.7, body:"Plastic (slim)", fans:1,
+    thermalSys:"Single fan, basic cooling",
+    throttle:"Yes under load", cpuTemp:80, gpuTemp:0, powerDraw:65,
+    batteryLight:7, batteryHeavy:3,
+    os:"Windows 11", blender:40, benchmark:12500,
+    afterSale:"Good", upgrade:"Very limited (1 slot)", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/4nvNeaY",
+    emoji:"💼", winner:false,
+    color:"#555",
+    badges:[{t:"No dGPU",c:"red"},{t:"Office Use",c:"amber"},{t:"7hr Battery",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/61x6hm+aisL._SL1500_.jpg"
+  },
+  {
+    id:7, name:"Acer Aspire Lite", short:"Aspire Lite", type:"office", typeLabel:"Budget/Office",
+    score:40, priceRange:"₹47,990–₹69,990", launchPrice:"₹47,990", launchYear:2023,
+    cpu:"Ryzen 5/7 5000–7000", cpuHz:"up to 4.5 GHz", cpuGen:"Ryzen 5000/7000",
+    gpu:"AMD Radeon (iGPU)", gpuTGP:15, gpuAtSpec:false,
+    ram:"8–16GB DDR4", ramHz:"DDR4-3200", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 3", ssdBrand:"OEM Varies",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:60,
+    weight:1.59, body:"Plastic (ultra-slim)", fans:1,
+    thermalSys:"Single fan, basic cooling",
+    throttle:"Yes under load", cpuTemp:78, gpuTemp:0, powerDraw:65,
+    batteryLight:8, batteryHeavy:3,
+    os:"Windows 11", blender:45, benchmark:11500,
+    afterSale:"Average", upgrade:"RAM upgradable (2 slots)", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/46znyo8",
+    emoji:"🪶", winner:false,
+    color:"#555",
+    badges:[{t:"Lightest Win",c:"blue"},{t:"No dGPU",c:"red"},{t:"8hr Battery",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71UbQfBtOrL._SL1500_.jpg"
+  },
+  {
+    id:8, name:"Dell G15", short:"Dell G15", type:"budget-gaming", typeLabel:"Budget Gaming",
+    score:62, priceRange:"₹79,990–₹1,09,990", launchPrice:"₹79,990", launchYear:2023,
+    cpu:"i5/i7 12–13th Gen", cpuHz:"up to 5.0 GHz", cpuGen:"12–13th Gen",
+    gpu:"RTX 3050/4060", gpuTGP:80, gpuAtSpec:false,
+    ram:"8–16GB DDR5", ramHz:"DDR5-4800", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"Samsung PM9A1",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:165,
+    weight:2.5, body:"Plastic (chunky)", fans:2,
+    thermalSys:"2 fans, 4 heat pipes (limited airflow)",
+    throttle:"YES — GPU throttled ⚠️", cpuTemp:90, gpuTemp:85, powerDraw:180,
+    batteryLight:4, batteryHeavy:1,
+    os:"Windows 11", blender:22, benchmark:6500,
+    afterSale:"Average", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/4mNIahc",
+    emoji:"⚠️", winner:false,
+    color:"#ff3b3b",
+    badges:[{t:"GPU Throttled",c:"red"},{t:"Capped 80W",c:"red"},{t:"Heavy",c:"amber"}],
+    img:"https://m.media-amazon.com/images/I/71Av0f82jSL._SL1500_.jpg"
+  },
+  {
+    id:9, name:"HP 15", short:"HP 15", type:"office", typeLabel:"Budget/Office",
+    score:35, priceRange:"₹45,990–₹60,990", launchPrice:"₹45,990", launchYear:2023,
+    cpu:"i3/i5 12th Gen / Ryzen 5", cpuHz:"up to 4.4 GHz", cpuGen:"12th Gen",
+    gpu:"Intel Iris Xe (iGPU)", gpuTGP:15, gpuAtSpec:false,
+    ram:"8–16GB DDR4", ramHz:"DDR4-3200", ramSlots:1, ramEmpty:false,
+    ssdGen:"PCIe Gen 3", ssdBrand:"OEM Mixed",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:60,
+    weight:1.75, body:"Plastic", fans:1,
+    thermalSys:"Single fan, basic",
+    throttle:"Yes under load", cpuTemp:78, gpuTemp:0, powerDraw:65,
+    batteryLight:7, batteryHeavy:3,
+    os:"Windows 11", blender:50, benchmark:10500,
+    afterSale:"Poor in India", upgrade:"Very limited", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/46HouWc",
+    emoji:"📎", winner:false,
+    color:"#555",
+    badges:[{t:"No dGPU",c:"red"},{t:"Poor Service",c:"red"},{t:"Basic Use",c:"amber"}],
+    img:"https://m.media-amazon.com/images/I/81YTvDkzP2L._SL1500_.jpg"
+  },
+  {
+    id:10, name:"Asus Vivobook 15 (S)", short:"Vivobook 15 S", type:"office", typeLabel:"Budget/Office",
+    score:42, priceRange:"₹45,990–₹68,990", launchPrice:"₹45,990", launchYear:2024,
+    cpu:"i5/i7 12–13th Gen", cpuHz:"up to 4.7 GHz", cpuGen:"12–13th Gen",
+    gpu:"Intel Iris Xe (iGPU)", gpuTGP:15, gpuAtSpec:false,
+    ram:"8–16GB DDR4", ramHz:"DDR4-3200", ramSlots:1, ramEmpty:false,
+    ssdGen:"PCIe Gen 3", ssdBrand:"SK Hynix OEM",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:60,
+    weight:1.7, body:"Plastic (slim)", fans:1,
+    thermalSys:"Single fan, basic cooling",
+    throttle:"Yes under load", cpuTemp:80, gpuTemp:0, powerDraw:65,
+    batteryLight:7, batteryHeavy:3,
+    os:"Windows 11", blender:40, benchmark:12500,
+    afterSale:"Good", upgrade:"Very limited (1 slot)", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/46SWIWT",
+    emoji:"💼", winner:false,
+    color:"#555",
+    badges:[{t:"No dGPU",c:"red"},{t:"Office Use",c:"amber"},{t:"Asus Quality",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/61x6hm+aisL._SL1500_.jpg"
+  },
+  {
+    id:11, name:"Acer ALG", short:"Acer ALG", type:"budget-gaming", typeLabel:"Budget Gaming",
+    score:60, priceRange:"₹62,990–₹74,990", launchPrice:"₹62,990", launchYear:2024,
+    cpu:"Intel Core 5-210H / i5-12450H", cpuHz:"up to 4.8 GHz", cpuGen:"12–13th Gen",
+    gpu:"RTX 3050 6GB", gpuTGP:85, gpuAtSpec:false,
+    ram:"16GB DDR5", ramHz:"DDR5-4800", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 3/4", ssdBrand:"Micron/SK Hynix OEM",
+    display:'15.6" FHD 1920×1080', panel:"IPS", hz:144,
+    weight:1.99, body:"Plastic", fans:2,
+    thermalSys:"Dual fan, 3 heat pipes",
+    throttle:"Mild", cpuTemp:88, gpuTemp:80, powerDraw:120,
+    batteryLight:4.5, batteryHeavy:1.5,
+    os:"Windows 11", blender:24, benchmark:5500,
+    afterSale:"Average", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/473RU23",
+    emoji:"🎮", winner:false,
+    color:"#ffb800",
+    badges:[{t:"Budget Gaming",c:"amber"},{t:"RTX 3050",c:"amber"},{t:"Upgradable",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71YJsZ9mcYL._SL1500_.jpg"
+  },
+  {
+    id:12, name:"HP Omen Ryzen 7", short:"Omen R7", type:"gaming", typeLabel:"Gaming",
+    score:83, priceRange:"₹89,990–₹1,09,990", launchPrice:"₹89,990", launchYear:2024,
+    cpu:"Ryzen 7 7840HS / 8845HS", cpuHz:"up to 5.1 GHz", cpuGen:"AMD Zen 4",
+    gpu:"RTX 4060 8GB", gpuTGP:120, gpuAtSpec:true,
+    ram:"16GB DDR5", ramHz:"DDR5-5600", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"SK Hynix OEM",
+    display:'16.1" FHD 1920×1080', panel:"IPS", hz:165,
+    weight:2.32, body:"Aluminum lid + plastic base", fans:2,
+    thermalSys:"Tempest Cooling: 2 fans, 5 heat pipes, IR temp sensors",
+    throttle:"None", cpuTemp:80, gpuTemp:75, powerDraw:200,
+    batteryLight:5.5, batteryHeavy:1.5,
+    os:"Windows 11", blender:13, benchmark:8800,
+    afterSale:"Poor in India", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/3XUwDU7",
+    emoji:"❄️", winner:false, winnerLabel:"BEST THERMALS",
+    color:"#3b9fff",
+    badges:[{t:"Best Thermals",c:"green"},{t:"Zen 4 CPU",c:"blue"},{t:"IR Cooling",c:"green"},{t:"No Throttle",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/71yvnRRsGNL._SL1500_.jpg"
+  },
+  {
+    id:13, name:"MSI Katana i7", short:"Katana i7", type:"gaming", typeLabel:"Gaming",
+    score:80, priceRange:"₹85,990–₹1,09,990", launchPrice:"₹85,990", launchYear:2024,
+    cpu:"i7-13620H / 14650HX", cpuHz:"up to 5.2 GHz", cpuGen:"13–14th Gen",
+    gpu:"RTX 4060 / 4070 8GB", gpuTGP:130, gpuAtSpec:true,
+    ram:"16GB DDR5", ramHz:"DDR5-5200", ramSlots:2, ramEmpty:true,
+    ssdGen:"PCIe Gen 4", ssdBrand:"Micron 2500 / Samsung PM9C1",
+    display:'15.6"–17.3" FHD/QHD', panel:"IPS", hz:165,
+    weight:2.5, body:"Plastic (solid feel)", fans:2,
+    thermalSys:"Cooler Boost 5: shared pipe CPU+GPU, 2 fans, 6 heat pipes",
+    throttle:"Mild (fans loud)", cpuTemp:88, gpuTemp:80, powerDraw:200,
+    batteryLight:5.5, batteryHeavy:1.5,
+    os:"Windows 11", blender:12, benchmark:8500,
+    afterSale:"Average", upgrade:"2 RAM + 2 SSD slots", updateSupport:"Win 11 (5yr+)",
+    amzLink:"https://amzn.to/3BgQaoT",
+    emoji:"⚔️", winner:false,
+    color:"#ff4d00",
+    badges:[{t:"6 Heat Pipes",c:"green"},{t:"Shared Pipe",c:"blue"},{t:"Upgradable",c:"green"}],
+    img:"https://m.media-amazon.com/images/I/61BN4uf77NL._SL1500_.jpg"
+  }
+];
+
+const typeColors = {gaming:"#00cc6a","budget-gaming":"#ffb800",premium:"#a855f7",office:"#555"};
+
+// ===================== RENDER CARDS =====================
+function scoreColor(s){
+  if(s>=80)return"#00cc6a";
+  if(s>=60)return"#ffb800";
+  return"#ff3b3b";
+}
+function badgeClass(c){
+  const m={green:"badge-green",red:"badge-red",amber:"badge-amber",blue:"badge-blue",purple:"badge-purple"};
+  return m[c]||"badge-amber";
+}
+
+function renderCards(filter='all'){
+  const grid=document.getElementById('cardsGrid');
+  grid.innerHTML='';
+  const filtered=filter==='all'?laptops:laptops.filter(l=>l.type===filter);
+  filtered.forEach(l=>{
+    const sc=scoreColor(l.score);
+    const badgesHtml=l.badges.map(b=>`<span class="badge ${badgeClass(b.c)}">${b.t}</span>`).join('');
+    const div=document.createElement('div');
+    div.className='laptop-card';
+    div.dataset.type=l.type;
+    div.innerHTML=`
+      ${l.winner||l.winnerLabel?`<div class="winner-ribbon">${l.winnerLabel||'WINNER'}</div>`:''}
+      <img class="card-img" src="${l.img}" alt="${l.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">
+      <div class="card-img-fallback" style="display:none">${l.emoji}</div>
+      <div class="card-body">
+        <div class="card-type" style="color:${typeColors[l.type]||'#888'}">${l.typeLabel}</div>
+        <div class="card-name">${l.name}</div>
+        <div class="card-score-row">
+          <div class="score-bar-wrap"><div class="score-bar" style="width:${l.score}%;background:${sc}"></div></div>
+          <div class="score-num" style="color:${sc}">${l.score}</div>
+        </div>
+        <div class="card-specs">
+          <div class="spec-pill"><div class="key">CPU</div><div class="val">${l.cpu.split('/')[0].trim()}</div></div>
+          <div class="spec-pill"><div class="key">GPU</div><div class="val">${l.gpu}</div></div>
+          <div class="spec-pill"><div class="key">GPU TGP</div><div class="val">${l.gpuTGP===15?'iGPU':l.gpuTGP+'W'}</div></div>
+          <div class="spec-pill"><div class="key">Display</div><div class="val">${l.hz}Hz ${l.panel.split(' ')[0]}</div></div>
+          <div class="spec-pill"><div class="key">Weight</div><div class="val">${l.weight} kg</div></div>
+          <div class="spec-pill"><div class="key">Battery</div><div class="val">~${l.batteryLight}h light</div></div>
+        </div>
+        <div class="card-price">${l.launchPrice}</div>
+        <div class="card-launch">Launch: ${l.launchYear} · ${l.os}</div>
+        <div class="card-badges">${badgesHtml}</div>
+        <a class="amz-btn" href="${l.amzLink}" target="_blank" rel="noopener"><span class="amz-icon">🛒</span>View on Amazon</a>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function filterCards(f,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(f);
+}
+
+// ===================== CHARTS =====================
+const names=laptops.map(l=>l.short);
+const GAMING_COLORS=laptops.map(l=>{
+  const m={gaming:"rgba(0,204,106,0.8)","budget-gaming":"rgba(255,184,0,0.8)",premium:"rgba(168,85,247,0.8)",office:"rgba(100,100,100,0.7)"};
+  return m[l.type]||"rgba(150,150,150,0.7)";
+});
+const CHART_OPTS={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{bodyFont:{family:"JetBrains Mono"},titleFont:{family:"JetBrains Mono"}}},scales:{x:{ticks:{color:"#888",font:{size:9,family:"JetBrains Mono"},maxRotation:45},grid:{color:"rgba(255,255,255,0.04)"}},y:{ticks:{color:"#888",font:{size:10,family:"JetBrains Mono"}},grid:{color:"rgba(255,255,255,0.06)"}}}};
+
+function mk(id,type,labels,data,colors,extra={}){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type,data:{labels,datasets:[{data,backgroundColor:colors,borderColor:colors.map(c=>c.replace('0.8','1').replace('0.7','1')),borderWidth:1,borderRadius:4,...extra}]},options:{...CHART_OPTS,...(extra.opts||{})}});
+}
+
+function initCharts(){
+  // Score bar
+  mk('scoreChart','bar',names,laptops.map(l=>l.score),GAMING_COLORS,{barThickness:16});
+
+  // Price vs Performance scatter
+  const pvpCtx=document.getElementById('pvpChart');
+  if(pvpCtx){
+    const prices={0:1.3,1:.95,2:1.3,3:1.15,4:.85,5:.55,6:.55,7:.55,8:.9,9:.5,10:.55,11:.68,12:.95,13:.92};
+    new Chart(pvpCtx,{type:'scatter',data:{datasets:laptops.map((l,i)=>({label:l.short,data:[{x:(prices[i]||1)*100,y:l.score}],backgroundColor:GAMING_COLORS[i],borderColor:GAMING_COLORS[i].replace('0.8','1').replace('0.7','1'),pointRadius:7,pointHoverRadius:10}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: Score ${c.raw.y} | ₹${(c.raw.x/100).toFixed(2)}L`},bodyFont:{family:"JetBrains Mono"},titleFont:{family:"JetBrains Mono"}}},scales:{x:{title:{display:true,text:'Price (₹ Lakhs)',color:'#888',font:{family:"JetBrains Mono",size:10}},ticks:{color:'#888',font:{size:9,family:"JetBrains Mono"}},grid:{color:'rgba(255,255,255,0.04)'}},y:{title:{display:true,text:'Score',color:'#888',font:{family:"JetBrains Mono",size:10}},ticks:{color:'#888',font:{size:9,family:"JetBrains Mono"}},grid:{color:'rgba(255,255,255,0.06)'},min:30,max:100}}}});
+  }
+
+  // TGP
+  mk('tgpChart','bar',names,laptops.map(l=>l.gpuTGP),laptops.map(l=>l.gpuAtSpec?"rgba(0,204,106,0.8)":"rgba(255,59,59,0.8)"),{barThickness:16});
+
+  // Thermal (lower=better, invert)
+  mk('thermalChart','bar',names,laptops.map(l=>l.cpuTemp),laptops.map(l=>l.cpuTemp<=80?"rgba(0,204,106,0.8)":l.cpuTemp<=90?"rgba(255,184,0,0.8)":"rgba(255,59,59,0.8)"),{barThickness:16});
+
+  // Battery
+  mk('batteryChart','bar',names,laptops.map(l=>l.batteryLight),laptops.map(l=>l.batteryLight>=12?"rgba(0,204,106,0.8)":l.batteryLight>=5?"rgba(59,159,255,0.8)":"rgba(255,184,0,0.8)"),{barThickness:16});
+
+  // Blender (lower = better)
+  mk('blenderChart','bar',names,laptops.map(l=>l.blender),laptops.map(l=>l.blender<=8?"rgba(0,204,106,0.8)":l.blender<=16?"rgba(59,159,255,0.8)":l.blender<=25?"rgba(255,184,0,0.8)":"rgba(100,100,100,0.6)"),{barThickness:16});
+
+  // Radar — top 6
+  const top6=[laptops[0],laptops[1],laptops[12],laptops[2],laptops[4],laptops[13]];
+  const radarColors=["rgba(0,204,106,0.6)","rgba(59,159,255,0.6)","rgba(59,159,255,0.5)","rgba(168,85,247,0.6)","rgba(255,184,0,0.6)","rgba(255,77,0,0.6)"];
+  const radarCtx=document.getElementById('radarChart');
+  if(radarCtx){
+    new Chart(radarCtx,{type:'radar',data:{labels:['Performance','Thermals','Upgradeability','Battery','Value','Build'],datasets:top6.map((l,i)=>({label:l.short,data:[
+      l.score,
+      Math.round(100-(l.cpuTemp-50)/70*100),
+      l.ramSlots===2&&l.ramEmpty?95:l.ramSlots===0?5:40,
+      Math.min(100,Math.round(l.batteryLight/18*100)),
+      Math.round((1-(parseInt(l.launchPrice.replace(/[₹,]/g,''))-45000)/(130000-45000))*100),
+      l.body.includes('aluminum')||l.body.includes('metal')||l.body.includes('All-aluminum')?90:l.body.includes('Metal')?75:55
+    ],backgroundColor:radarColors[i],borderColor:radarColors[i].replace('0.6','1'),pointRadius:4,borderWidth:2}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'#888',font:{family:"JetBrains Mono",size:9},boxWidth:10,padding:8}}},scales:{r:{grid:{color:'rgba(255,255,255,0.08)'},angleLines:{color:'rgba(255,255,255,0.08)'},ticks:{display:false},pointLabels:{color:'#aaa',font:{family:"JetBrains Mono",size:10}}}}}});
+  }
+}
+
+// ===================== HEATMAP =====================
+function initHeatmap(){
+  const params=[
+    {key:'score',label:'Overall Score',max:100},
+    {key:'gpuTGP',label:'GPU TGP (W)',max:145},
+    {key:'cpuTemp',label:'CPU Temp °C',max:100,invert:true},
+    {key:'batteryLight',label:'Battery Hours',max:18},
+    {key:'blender',label:'Blender (min)',max:50,invert:true},
+    {key:'weight',label:'Weight (kg)',max:2.5,invert:true},
+    {key:'hz',label:'Refresh Hz',max:165},
+    {key:'ramSlots',label:'RAM Slots',max:2},
+  ];
+  const cont=document.getElementById('heatmapContainer');
+  let html='<div class="hm-header">';
+  laptops.forEach(l=>`<span>${l.short}</span>`).forEach(s=>html+=`<span style="font-size:9px;color:var(--muted);flex:1;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);height:70px;display:flex;align-items:center;justify-content:center;font-family:var(--mono)">${s}</span>`);
+  // fix header
+  html='<div class="heatmap-grid">';
+  params.forEach(p=>{
+    html+=`<div class="hm-row"><div class="hm-label">${p.label}</div>`;
+    laptops.forEach(l=>{
+      const raw=l[p.key]||0;
+      let pct=raw/p.max;
+      if(p.invert)pct=1-pct;
+      pct=Math.max(0,Math.min(1,pct));
+      const r=Math.round(255*(1-pct)),g=Math.round(180*pct),b=40;
+      const bg=`rgba(${r},${g},${b},0.85)`;
+      const disp=p.key==='weight'?raw+'kg':p.key==='cpuTemp'?raw+'°':p.key==='batteryLight'?raw+'h':p.key==='blender'?raw+'m':p.key==='gpuTGP'?(raw===15?'iGPU':raw+'W'):raw;
+      html+=`<div class="hm-cell" style="background:${bg}" title="${l.short}: ${disp}">${disp}</div>`;
+    });
+    html+='</div>';
+  });
+  html+='</div>';
+  cont.innerHTML=html;
+  // Add laptop headers above heatmap
+  const headerDiv=document.createElement('div');
+  headerDiv.style.cssText='display:flex;gap:2px;margin-left:132px;margin-bottom:4px;overflow-x:auto';
+  laptops.forEach(l=>{
+    const s=document.createElement('div');
+    s.style.cssText='flex:1;font-size:8px;color:var(--muted);font-family:var(--mono);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);height:70px;display:flex;align-items:center;justify-content:center';
+    s.textContent=l.short;
+    headerDiv.appendChild(s);
+  });
+  cont.insertBefore(headerDiv,cont.firstChild);
+}
+
+// ===================== FULL TABLE =====================
+function initTable(){
+  const cols=[
+    {k:'name',l:'Laptop'},{k:'launchPrice',l:'Launch ₹'},{k:'launchYear',l:'Year'},
+    {k:'cpu',l:'CPU'},{k:'cpuHz',l:'Clock'},{k:'gpu',l:'GPU'},
+    {k:'gpuTGP',l:'TGP'},{k:'gpuAtSpec',l:'Full TGP?'},
+    {k:'ramHz',l:'RAM Hz'},{k:'ramSlots',l:'Slots'},{k:'ramEmpty',l:'Empty Slot?'},
+    {k:'ssdGen',l:'SSD Gen'},{k:'ssdBrand',l:'SSD Brand'},
+    {k:'panel',l:'Panel'},{k:'hz',l:'Hz'},{k:'weight',l:'Weight'},
+    {k:'fans',l:'# Fans'},{k:'throttle',l:'Throttle?'},
+    {k:'cpuTemp',l:'CPU°C'},{k:'gpuTemp',l:'GPU°C'},
+    {k:'batteryLight',l:'Batt. Light'},{k:'batteryHeavy',l:'Batt. Heavy'},
+    {k:'blender',l:'Blender(m)'},{k:'afterSale',l:'After-Sale'},
+    {k:'score',l:'Score'},
+  ];
+  const tbl=document.getElementById('fullTable');
+  let html=`<thead><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}</tr></thead><tbody>`;
+  const sorted=[...laptops].sort((a,b)=>b.score-a.score);
+  sorted.forEach(l=>{
+    html+=`<tr>`;
+    cols.forEach(c=>{
+      let v=l[c.k];
+      if(c.k==='gpuAtSpec') v=v?'<span style="color:#00cc6a">✓ Yes</span>':'<span style="color:#ff3b3b">✗ No</span>';
+      else if(c.k==='ramEmpty') v=v?'<span style="color:#00cc6a">Yes</span>':'<span style="color:#ff3b3b">No</span>';
+      else if(c.k==='score') v=`<span class="tbl-score" style="color:${scoreColor(l.score)}">${v}</span>`;
+      else if(c.k==='gpuTemp') v=v===0?'N/A':v+'°C';
+      else if(c.k==='cpuTemp') v=v+'°C';
+      else if(c.k==='gpuTGP') v=v===15?'iGPU':v+'W';
+      else if(c.k==='batteryLight'||c.k==='batteryHeavy') v='~'+v+' hrs';
+      else if(c.k==='blender') v=v+' min';
+      else if(c.k==='weight') v=v+' kg';
+      else if(c.k==='hz') v=v+'Hz';
+      else if(c.k==='fans') v=v===0?'Fanless':v;
+      html+=`<td>${v}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+='</tbody>';
+  tbl.innerHTML=html;
+}
+
+// ===================== SCROLL REVEAL =====================
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ===================== INIT =====================
+renderCards();
+initCharts();
+initHeatmap();
+initTable();
+</script>
+</body>
+</html>
